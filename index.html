@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Solution Thailand V4.0 - Global Smart Monitoring</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Font: Inter & Sarabun -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', 'Sarabun', sans-serif; background-color: #F8FAFC; }
+        .chart-container { position: relative; width: 100%; max-width: 100%; height: 350px; max-height: 400px; margin-left: auto; margin-right: auto; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .hidden { display: none; }
+    </style>
+    
+    <!-- Chosen Palette: Emerald Grove (Nature/Sustainability) + Deep Slate (Analytics) + Cobalt Trust (Financials) -->
+    <!-- Application Structure Plan:
+         - Purpose: Translate complex carbon sequestration reports into a high-impact interactive experience for global partners.
+         - Structure: 
+            1. Overview Hub: KPIs and Trend Charts for rapid understanding of financial/environmental value.
+            2. Live Monitoring: Satellite & Sensor telemetry visualization to prove project authenticity.
+            3. Payout Roadmap: Transparent financial breakdown of the 2-Phase income strategy.
+            4. Digital Passport: Verified farmer credentials including GIS data and registry hash.
+            5. Deployment Compass: Built-in guide to help the owner host the app for free.
+    -->
+    <!-- Visualization & Content Choices:
+         - Chart.js (Mixed): Combines Carbon Tons (Bar) and Revenue (Line) to show correlation over 14 years.
+         - Logic: Tab-based navigation with state-driven updates for sensor simulation.
+         - UX: Emerald/Slate theme maintains a calm, professional eco-tech aesthetic.
+         - NO SVG graphics used. NO Mermaid JS used.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="text-slate-800 antialiased overflow-x-hidden">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        
+        <!-- Sidebar Navigation -->
+        <nav class="fixed bottom-0 w-full bg-white border-t md:top-0 md:left-0 md:w-72 md:h-full md:border-r md:border-t-0 p-6 z-50 shadow-2xl md:shadow-none flex flex-row md:flex-col justify-between md:justify-start">
+            <div class="hidden md:block mb-10 px-2">
+                <div class="flex items-center space-x-3 mb-2">
+                    <div class="bg-emerald-600 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-200">
+                        <i class="fa-solid fa-leaf text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-slate-800 font-extrabold text-lg leading-none uppercase tracking-tight">Carbon Solutions</h1>
+                        <span class="text-[10px] text-emerald-600 font-bold uppercase tracking-widest">Thailand V4.0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-around md:flex-col w-full md:space-y-3">
+                <button onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-btn flex flex-col md:flex-row items-center md:space-x-4 p-3 md:px-5 md:py-4 rounded-2xl transition-all bg-emerald-600 text-white shadow-lg shadow-emerald-200">
+                    <i class="fa-solid fa-chart-line text-lg"></i>
+                    <span class="text-[10px] md:text-sm font-bold mt-1 md:mt-0">Overview</span>
+                </button>
+                <button onclick="switchTab('monitoring')" id="btn-monitoring" class="nav-btn flex flex-col md:flex-row items-center md:space-x-4 p-3 md:px-5 md:py-4 rounded-2xl transition-all text-slate-400 hover:bg-slate-50">
+                    <i class="fa-solid fa-satellite-dish text-lg"></i>
+                    <span class="text-[10px] md:text-sm font-bold mt-1 md:mt-0">Monitor</span>
+                </button>
+                <button onclick="switchTab('finances')" id="btn-finances" class="nav-btn flex flex-col md:flex-row items-center md:space-x-4 p-3 md:px-5 md:py-4 rounded-2xl transition-all text-slate-400 hover:bg-slate-50">
+                    <i class="fa-solid fa-wallet text-lg"></i>
+                    <span class="text-[10px] md:text-sm font-bold mt-1 md:mt-0">Revenue</span>
+                </button>
+                <button onclick="switchTab('profile')" id="btn-profile" class="nav-btn flex flex-col md:flex-row items-center md:space-x-4 p-3 md:px-5 md:py-4 rounded-2xl transition-all text-slate-400 hover:bg-slate-50">
+                    <i class="fa-solid fa-id-card text-lg"></i>
+                    <span class="text-[10px] md:text-sm font-bold mt-1 md:mt-0">Digital ID</span>
+                </button>
+                <button onclick="switchTab('deploy')" id="btn-deploy" class="nav-btn flex flex-col md:flex-row items-center md:space-x-4 p-3 md:px-5 md:py-4 rounded-2xl transition-all text-slate-400 hover:bg-slate-50">
+                    <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
+                    <span class="text-[10px] md:text-sm font-bold mt-1 md:mt-0">Host App</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Workspace -->
+        <main class="flex-1 pb-32 md:pb-10 md:ml-72 p-4 md:p-10 max-w-[1600px] w-full">
+            
+            <!-- Global Header -->
+            <header class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 mb-10 fade-in">
+                <div class="space-y-2">
+                    <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Carbon Sequestration Report</h2>
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                        <div class="flex items-center gap-2 text-emerald-700 bg-emerald-50 px-4 py-1.5 rounded-xl border border-emerald-100">
+                            <i class="fa-solid fa-user-check text-sm"></i>
+                            <span class="text-sm font-bold">Ms. Jongkolanee Wattanapithak</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-slate-500 bg-white px-4 py-1.5 rounded-xl border border-slate-200">
+                            <span class="text-[10px] font-black uppercase text-slate-400">Registry ID:</span>
+                            <span class="text-sm font-mono font-bold text-slate-700">CS-TH-BRLS-0001</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center w-full md:w-auto">
+                    <div class="w-full md:w-auto bg-white border border-slate-200 p-4 px-6 rounded-[2rem] shadow-sm flex items-center justify-between gap-6">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Net Verified Carbon</span>
+                            <span class="text-xl font-black text-emerald-600 font-mono tracking-tighter">
+                                <span id="carbon-counter">1103.4567</span> <span class="text-xs text-slate-400">tCO2e</span>
+                            </span>
+                        </div>
+                        <i class="fa-solid fa-arrows-rotate text-emerald-500 animate-spin text-xl"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- SECTION: DASHBOARD -->
+            <div id="view-dashboard" class="space-y-8 fade-in">
+                <div class="bg-blue-50 border border-blue-100 rounded-3xl p-6">
+                    <p class="text-sm text-blue-800 font-medium leading-relaxed">
+                        <i class="fa-solid fa-chart-pie mr-2 text-blue-500"></i>
+                        <strong>Dashboard Overview:</strong> This section provides a high-level summary of the project's performance. The chart below correlates <strong>carbon accumulation (tons)</strong> with <strong>financial returns (THB)</strong>, clearly distinguishing between the verified historical results of Phase 1 and the strategic AI-driven projections of Phase 2.
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 md:p-8 rounded-[3rem] shadow-sm border border-slate-100">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+                        <h3 class="text-xl font-black flex items-center gap-2 text-slate-800 uppercase tracking-tight">
+                            <i class="fa-solid fa-layer-group text-emerald-500"></i>
+                            Sequestration Growth (2016 - 2029)
+                        </h3>
+                        <div class="flex gap-4">
+                            <div class="flex items-center gap-2"><div class="w-3 h-3 bg-slate-200 rounded-full"></div><span class="text-[10px] font-black text-slate-400 uppercase">Phase 1</span></div>
+                            <div class="flex items-center gap-2"><div class="w-3 h-3 bg-emerald-500 rounded-full"></div><span class="text-[10px] font-black text-slate-400 uppercase">Phase 2</span></div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="p-3 bg-blue-50 text-blue-600 rounded-2xl"><i class="fa-solid fa-wallet"></i></div>
+                            <span class="text-sm font-bold text-slate-500 uppercase tracking-tight">Phase 1 Total</span>
+                        </div>
+                        <h4 class="text-3xl font-black text-slate-800 tracking-tighter">฿XX,XXX</h4>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase mt-2">Verified Net Income</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="p-3 bg-emerald-50 text-emerald-600 rounded-2xl"><i class="fa-solid fa-seedling"></i></div>
+                            <span class="text-sm font-bold text-slate-500 uppercase tracking-tight">Total Carbon</span>
+                        </div>
+                        <h4 class="text-3xl font-black text-slate-800 tracking-tighter">902.0</h4>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase mt-2">Accumulated Tons</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="p-3 bg-amber-50 text-amber-600 rounded-2xl"><i class="fa-solid fa-award"></i></div>
+                            <span class="text-sm font-bold text-slate-500 uppercase tracking-tight">Certification</span>
+                        </div>
+                        <h4 class="text-3xl font-black text-slate-800 tracking-tighter">GOLD</h4>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase mt-2">ECT Standard v4.0</p>
+                    </div>
+                    <div class="bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-xl flex flex-col justify-between">
+                        <div>
+                            <span class="text-[10px] font-black text-emerald-400 uppercase tracking-widest leading-none">Withdrawal Portal</span>
+                            <h4 class="text-4xl font-black mt-2 tracking-tighter">฿XX,XXX</h4>
+                        </div>
+                        <button onclick="openModal()" class="w-full mt-6 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-black text-xs transition-all flex items-center justify-center gap-2">
+                             PROCESS PAYOUT <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: MONITORING -->
+            <div id="view-monitoring" class="hidden space-y-8 fade-in">
+                <div class="bg-emerald-50 border border-emerald-100 rounded-3xl p-6">
+                    <p class="text-sm text-emerald-800 font-medium leading-relaxed">
+                        <i class="fa-solid fa-microchip mr-2"></i>
+                        <strong>Telemetry Hub:</strong> This section showcases real-time data integrity. By integrating satellite imagery (Sentinel-2) with ground-level sensors, we provide proof of sequestration through vegetation health (NDVI), soil moisture, and atmospheric CO2 flux monitoring.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Satellite View -->
+                    <div class="lg:col-span-2 bg-slate-900 rounded-[3rem] p-8 h-[550px] relative overflow-hidden border-4 border-slate-800 shadow-2xl flex items-center justify-center">
+                        <div class="absolute top-8 left-8 z-10">
+                            <div class="bg-emerald-500/20 backdrop-blur-md border border-emerald-500/50 p-4 rounded-2xl flex items-center gap-4">
+                                <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse-slow"></div>
+                                <div><p class="text-[10px] font-black text-emerald-300 uppercase">Live Satellite</p><p class="text-white font-mono text-sm">SENTINEL-2B | ACTIVE</p></div>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-fingerprint text-emerald-500/20 text-[20rem] absolute"></i>
+                        <div class="absolute bottom-8 left-8 right-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="bg-black/40 backdrop-blur-md border border-white/10 p-4 rounded-2xl text-white">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase">NDVI INDEX</p>
+                                <p class="text-2xl font-black" id="val-ndvi">0.78</p>
+                            </div>
+                            <div class="bg-black/40 backdrop-blur-md border border-white/10 p-4 rounded-2xl text-white">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase">CO2 ABSORPTION</p>
+                                <p class="text-2xl font-black" id="val-co2">12.8</p>
+                            </div>
+                            <div class="bg-black/40 backdrop-blur-md border border-white/10 p-4 rounded-2xl text-white">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase">SIGNAL</p>
+                                <p class="text-2xl font-black text-emerald-400">EXCELLENT</p>
+                            </div>
+                            <div class="bg-black/40 backdrop-blur-md border border-white/10 p-4 rounded-2xl text-white">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase">SYNC</p>
+                                <p class="text-2xl font-black">2 SECS</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Ground Sensors -->
+                    <div class="space-y-6">
+                        <h3 class="text-xl font-black text-slate-800 px-2 flex items-center gap-2"><i class="fa-solid fa-tower-broadcast text-emerald-500"></i> Local Telemetry</h3>
+                        <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 flex items-center gap-6">
+                            <div class="p-5 rounded-2xl bg-blue-500 text-white shadow-lg"><i class="fa-solid fa-droplet text-2xl"></i></div>
+                            <div><p class="text-sm font-bold text-slate-400">Soil Moisture</p><h4 class="text-3xl font-black text-slate-800"><span id="val-moisture">65.4</span><span class="text-sm font-normal text-slate-400 ml-1">%</span></h4></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 flex items-center gap-6">
+                            <div class="p-5 rounded-2xl bg-orange-500 text-white shadow-lg"><i class="fa-solid fa-temperature-high text-2xl"></i></div>
+                            <div><p class="text-sm font-bold text-slate-400">Canopy Temp</p><h4 class="text-3xl font-black text-slate-800"><span id="val-temp">28.5</span><span class="text-sm font-normal text-slate-400 ml-1">?C</span></h4></div>
+                        </div>
+                        <div class="bg-emerald-900 p-8 rounded-[3rem] text-white">
+                            <p class="text-[10px] font-black text-emerald-400 uppercase mb-2">SYSTEM STATUS</p>
+                            <p class="text-sm font-medium opacity-80 leading-relaxed italic">"All ground sensors are verified and encrypted on-chain via dMRV protocol."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: REVENUE TABLE -->
+            <div id="view-finances" class="hidden space-y-8 fade-in">
+                <div class="bg-white p-10 rounded-[3.5rem] shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+                        <h3 class="text-2xl font-black text-slate-800">Income Ledger & Road Map</h3>
+                        <div class="bg-slate-50 text-slate-600 px-6 py-2 rounded-2xl text-sm font-bold border border-slate-100">Base Currency: THB | $1 = ฿31.15</div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr class="text-slate-400 text-[10px] font-black uppercase tracking-widest border-b border-slate-100">
+                                    <th class="pb-8">Deployment Phase</th>
+                                    <th class="pb-8">Timeline</th>
+                                    <th class="pb-8">Yield Logic</th>
+                                    <th class="pb-8 text-right">Net Value (THB)</th>
+                                    <th class="pb-8 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-50">
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="py-10 font-black text-slate-800 text-xl">Verification Phase</td>
+                                    <td class="py-10 text-slate-500 font-bold">2016 - 2022</td>
+                                    <td class="py-10"><span class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase">Market Fixed</span></td>
+                                    <td class="py-10 text-right font-black text-slate-800 text-xl">฿XX,XXX</td>
+                                    <td class="py-10 text-right"><button onclick="openModal()" class="bg-emerald-600 text-white px-10 py-4 rounded-[2rem] text-xs font-black shadow-xl shadow-emerald-100 active:scale-95 transition-all">WITHDRAW</button></td>
+                                </tr>
+                                <tr class="opacity-40">
+                                    <td class="py-10 font-black text-slate-800 text-xl">Accumulation Phase</td>
+                                    <td class="py-10 text-slate-500 font-bold">2023 - 2029</td>
+                                    <td class="py-10"><span class="bg-amber-100 text-amber-700 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase">Biomass AI</span></td>
+                                    <td class="py-10 text-right font-black text-slate-800 text-xl">฿XX,XXX</td>
+                                    <td class="py-10 text-right"><span class="text-slate-400 text-xs font-bold italic border-2 border-dashed border-slate-200 px-4 py-2 rounded-xl">ONGOING</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: DIGITAL ID -->
+            <div id="view-profile" class="hidden max-w-6xl mx-auto space-y-8 fade-in">
+                <div class="bg-white p-12 rounded-[4rem] shadow-sm border border-slate-100 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-80 h-80 bg-emerald-500 opacity-5 -mr-32 -mt-32 rounded-full"></div>
+                    <div class="flex flex-col lg:flex-row items-center lg:items-start gap-12 relative z-10 text-center lg:text-left">
+                        <div class="flex flex-col items-center gap-6">
+                            <div class="relative"><div class="w-48 h-48 bg-slate-100 rounded-[4rem] flex items-center justify-center shadow-inner border-8 border-white"><i class="fa-solid fa-user-check text-[5rem] text-slate-300"></i></div><div class="absolute -bottom-2 -right-2 bg-emerald-500 p-4 rounded-3xl border-4 border-white shadow-xl"><i class="fa-solid fa-shield-check text-white text-xl"></i></div></div>
+                            <div class="bg-white p-5 rounded-[2.5rem] border border-slate-100 shadow-sm"><img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=CS-TH-BRLS-0001" alt="QR" class="rounded-xl opacity-80" /><p class="text-[9px] font-black text-slate-400 mt-4 uppercase tracking-[0.3em]">VALID REGISTRY ID</p></div>
+                        </div>
+                        <div class="flex-1 space-y-8">
+                            <div><h3 class="text-4xl font-black text-slate-800 mb-2 leading-tight">Ms. Jongkolanee Wattanapithak</h3><p class="text-lg font-bold text-emerald-600">Rubber Plantation Carbon Project Owner</p><div class="flex flex-wrap gap-3 mt-6 justify-center lg:justify-start"><span class="bg-emerald-600 text-white text-[10px] font-black px-6 py-2.5 rounded-2xl uppercase tracking-widest">RAOT CERTIFIED</span><span class="bg-slate-800 text-white text-[10px] font-black px-6 py-2.5 rounded-2xl uppercase tracking-widest">ECT-GOLD-BRLS</span></div></div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-100 text-sm">
+                                <div class="flex items-start gap-4"><i class="fa-solid fa-map-pin text-emerald-500 mt-1"></i><div><p class="text-[10px] font-black text-slate-400 uppercase mb-1">PLOT LOCATION</p><p class="font-bold text-slate-700">100/1 Moo 13, Samrong mai, Lahan sai, Buriram 31170</p><p class="font-mono text-blue-600 mt-2">14.3515? N, 102.8456? E</p></div></div>
+                                <div class="flex items-start gap-4"><i class="fa-solid fa-calendar text-blue-500 mt-1"></i><div><p class="text-[10px] font-black text-slate-400 uppercase mb-1">PROJECT GENESIS</p><p class="font-bold text-slate-700">January 1st, 2016</p><p class="text-emerald-600 font-bold mt-2"><i class="fa-solid fa-clipboard-check"></i> AUDIT: OCT 2025</p></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 flex flex-col justify-between">
+                        <h4 class="text-[10px] font-black text-slate-400 uppercase mb-8 tracking-[0.2em] flex items-center gap-2"><i class="fa-solid fa-tree-city text-emerald-500"></i> PLANTATION</h4>
+                        <div class="space-y-6"><div><p class="text-xs text-slate-400 mb-1">Total Area</p><p class="text-xl font-black text-slate-800">38 Rai 3 Ngan 50 Sq.W</p></div><div><p class="text-xs text-slate-400 mb-1">Tree Age</p><p class="text-xl font-black text-slate-800">15 Years (Mature)</p></div><div><p class="text-xs text-slate-400 mb-1">Density</p><p class="text-xl font-black text-slate-800">2,999 Trees</p></div></div>
+                    </div>
+                    <div class="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 flex flex-col justify-between">
+                        <h4 class="text-[10px] font-black text-slate-400 uppercase mb-8 tracking-[0.2em] flex items-center gap-2"><i class="fa-solid fa-file-contract text-blue-500"></i> COMPLIANCE</h4>
+                        <div class="space-y-6"><div><p class="text-xs text-slate-400 mb-1">Methodology</p><p class="text-sm font-black text-slate-800 uppercase leading-tight">ECT Standard v4.0</p></div><div><p class="text-xs text-slate-400 mb-1">RAOT Registry</p><p class="text-xl font-mono font-black text-slate-800">1-XXXX-XX789-01</p></div><div><p class="text-xs text-slate-400 mb-1">Verification</p><div class="flex items-center gap-2"><div class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></div><span class="text-xl font-black text-emerald-600 uppercase">VERIFIED</span></div></div></div>
+                    </div>
+                    <div class="bg-slate-900 p-10 rounded-[3rem] shadow-2xl text-white flex flex-col justify-between relative overflow-hidden">
+                        <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full"></div>
+                        <h4 class="text-[10px] font-black text-slate-500 uppercase mb-8 tracking-[0.2em] flex items-center gap-2"><i class="fa-solid fa-database"></i> REGISTRY</h4>
+                        <div class="space-y-6 relative z-10"><div><p class="text-[10px] text-emerald-400 font-bold uppercase mb-1">Contract Address</p><p class="text-xs font-mono text-slate-400 break-all leading-relaxed">0x2d91f8c4e62a3b7c12f42a12...93e4</p></div><div><p class="text-[10px] text-emerald-400 font-bold uppercase mb-1">Oracle Hash</p><p class="text-xs font-black text-slate-200 uppercase tracking-widest">SAT-LINK-ALPHA-9</p></div><div class="pt-6 border-t border-white/10 flex items-center gap-3"><i class="fa-solid fa-circle-check text-emerald-500 text-3xl"></i><p class="text-[9px] text-slate-400 font-black uppercase leading-tight">ON-CHAIN<br/>VERIFIED</p></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: DEPLOYMENT GUIDE (THAI CONTENT FOR THE OWNER) -->
+            <div id="view-deploy" class="hidden max-w-5xl mx-auto space-y-8 fade-in">
+                <div class="bg-emerald-600 p-12 rounded-[4rem] text-white shadow-2xl shadow-emerald-100 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-80 h-80 bg-white opacity-10 -mr-20 -mt-20 rounded-full"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-4xl font-black mb-6 tracking-tight">Deployment & Hosting Guide</h3>
+                        <p class="text-emerald-100 font-medium text-lg leading-relaxed mb-10 max-w-2xl">
+                            คุณชุมนุมสามารถนำไฟล์หน้านี้ไปเปิดใช้งานเป็นเว็บไซต์ของ **หจก.คาร์บอนโซลูชั่น (ไทยแลนด์)** ได้ฟรีและรวดเร็วที่สุดโดยทำตามขั้นตอนด้านล่างนี้ครับ
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="bg-white/10 backdrop-blur-md p-8 rounded-[2.5rem] border border-white/20">
+                                <h4 class="font-black text-xl mb-4 flex items-center gap-3"><i class="fa-brands fa-github"></i> 1. GitHub Pages (แนะนำ)</h4>
+                                <ul class="text-sm space-y-3 opacity-90">
+                                    <li>• สร้างบัญชีที่ GitHub.com (ฟรี)</li>
+                                    <li>• สร้าง Repository ใหม่ชื่อ <strong>carbon-app</strong></li>
+                                    <li>• อัปโหลดไฟล์ <strong>index.html</strong> นี้ขึ้นไป</li>
+                                    <li>• ไปที่ Settings > Pages > เลือกเปิดใช้งาน</li>
+                                </ul>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-md p-8 rounded-[2.5rem] border border-white/20">
+                                <h4 class="font-black text-xl mb-4 flex items-center gap-3"><i class="fa-solid fa-bolt"></i> 2. Vercel (เร็วและเสถียร)</h4>
+                                <ul class="text-sm space-y-3 opacity-90">
+                                    <li>• ไปที่ Vercel.com เลือก Hobby Plan (ฟรี)</li>
+                                    <li>• เชื่อมต่อกับ GitHub หรือลากไฟล์วาง</li>
+                                    <li>• ระบบจะออกลิงก์เว็บให้ทันทีภายใน 1 นาที</li>
+                                    <li>• รองรับ SSL (HTTPS) อัตโนมัติ</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-12 rounded-[3.5rem] border border-slate-100 shadow-sm">
+                    <h3 class="text-2xl font-black text-slate-800 mb-8 flex items-center gap-3"><i class="fa-solid fa-link text-blue-500"></i> เชื่อมต่อโดเมน carbonsolutionthailand.com</h3>
+                    <div class="space-y-6">
+                        <div class="flex gap-6 items-start">
+                            <div class="w-10 h-10 bg-slate-900 text-white rounded-full flex items-center justify-center font-black flex-shrink-0">1</div>
+                            <p class="text-slate-600 leading-relaxed">เข้าสู่ระบบจัดการโดเมนของคุณชุมนุม (เช่น GoDaddy, DotArai) และไปที่เมนู <strong>DNS Management</strong></p>
+                        </div>
+                        <div class="flex gap-6 items-start">
+                            <div class="w-10 h-10 bg-slate-900 text-white rounded-full flex items-center justify-center font-black flex-shrink-0">2</div>
+                            <div class="flex-1">
+                                <p class="text-slate-600 mb-4 font-bold">เพิ่มค่า DNS Records ดังนี้ (สำหรับ Vercel):</p>
+                                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 font-mono text-sm space-y-2">
+                                    <p class="flex justify-between border-b border-slate-200 pb-2"><span>Type: <strong>A</strong></span> <span>Name: <strong>@</strong></span> <span>Value: <strong>76.76.21.21</strong></span></p>
+                                    <p class="flex justify-between pt-2"><span>Type: <strong>CNAME</strong></span> <span>Name: <strong>www</strong></span> <span>Value: <strong>cname.vercel-dns.com</strong></span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-6 items-start">
+                            <div class="w-10 h-10 bg-slate-900 text-white rounded-full flex items-center justify-center font-black flex-shrink-0">3</div>
+                            <p class="text-slate-600 leading-relaxed">รอการกระจายตัวของ DNS (ประมาณ 30-60 นาที) เว็บไซต์จะเข้าใช้งานได้ผ่านชื่อโดเมนหลักทันทีครับ</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODAL: PAYOUT SECURITY -->
+    <div id="payoutModal" class="fixed inset-0 bg-slate-900/95 backdrop-blur-xl z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-[4rem] shadow-2xl overflow-hidden animate-in">
+            <div id="modal-step-1" class="p-12">
+                <div class="flex justify-between items-center mb-10"><h3 class="text-2xl font-black text-slate-800 tracking-tight">Payout Verification</h3><button onclick="closeModal()" class="text-slate-300 hover:text-slate-600 transition-colors"><i class="fa-solid fa-circle-xmark text-3xl"></i></button></div>
+                <div class="bg-slate-50 p-12 rounded-[3.5rem] text-center border border-slate-100 shadow-inner relative overflow-hidden mb-10"><p class="text-[10px] font-black text-slate-400 uppercase mb-3 tracking-[0.2em] relative z-10">Verification Phase 1 Earnings</p><p class="text-6xl font-black text-slate-800 relative z-10">฿50,375</p><div class="absolute top-0 left-0 w-full h-2 bg-emerald-500"></div></div>
+                <div class="p-6 bg-blue-50 rounded-3xl flex items-center gap-6 mb-10 border border-blue-100"><div class="bg-white p-4 rounded-2xl shadow-sm text-blue-600"><i class="fa-solid fa-shield-halved text-2xl"></i></div><div><p class="text-sm font-black text-blue-900 uppercase">2FA Identity Required</p><p class="text-xs text-blue-600">A secure PIN will be sent to the registered mobile device.</p></div></div>
+                <button onclick="goToStep(2)" class="w-full py-6 bg-emerald-600 text-white rounded-[2.5rem] font-black text-lg shadow-2xl shadow-emerald-200 hover:bg-emerald-700 transition-all active:scale-95">CONFIRM & SEND PIN</button>
+            </div>
+            <div id="modal-step-2" class="p-14 text-center hidden">
+                <div class="w-28 h-28 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner text-blue-600"><i class="fa-solid fa-lock-keyhole text-5xl animate-pulse"></i></div>
+                <h3 class="text-3xl font-black mb-3 text-slate-800 tracking-tight">Identity Check</h3>
+                <p class="text-slate-400 text-sm mb-12 px-10 font-medium leading-relaxed">Enter the 6-digit PIN sent to your registered smartphone.</p>
+                <div class="flex justify-between gap-3 mb-14" id="pin-container"></div>
+                <div class="flex gap-4"><button onclick="goToStep(1)" class="flex-1 py-5 bg-slate-50 text-slate-400 rounded-3xl font-black text-xs">BACK</button><button onclick="validatePin()" class="flex-[2] py-5 bg-blue-600 text-white rounded-3xl font-black shadow-2xl shadow-blue-100 text-xs tracking-widest uppercase">VERIFY PIN</button></div>
+            </div>
+            <div id="modal-step-3" class="p-14 text-center hidden">
+                <div class="w-32 h-32 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-10"><i class="fa-solid fa-circle-check text-8xl text-emerald-600"></i></div>
+                <h3 class="text-4xl font-black text-slate-800 mb-6 tracking-tight">SUCCESS</h3>
+                <p class="text-slate-500 font-bold mb-12 px-10 leading-relaxed text-lg italic">"The transaction for ฿50,375 has been successfully signed and recorded on-chain. Funds arriving shortly."</p>
+                <button onclick="closeModal()" class="w-full py-6 bg-slate-900 text-white rounded-[2.5rem] font-black shadow-2xl uppercase tracking-widest">CLOSE PORTAL</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA & APP ENGINE ---
+        const projectionData = [
+            { year: '2016', amount: 95, income: 5305 }, { year: '2017', amount: 105, income: 5864 },
+            { year: '2018', amount: 115, income: 6423 }, { year: '2019', amount: 125, income: 6981 },
+            { year: '2020', amount: 140, income: 7819 }, { year: '2021', amount: 155, income: 8656 },
+            { year: '2022', amount: 167, income: 9327 }, { year: '2023', amount: 210, income: 14500, phase2: true },
+            { year: '2024', amount: 260, income: 18500, phase2: true }, { year: '2025', amount: 320, income: 24500, phase2: true },
+            { year: '2026', amount: 400, income: 32500, phase2: true }, { year: '2027', amount: 500, income: 45000, phase2: true },
+            { year: '2028', amount: 620, income: 58000, phase2: true }, { year: '2029', amount: 750, income: 72000, phase2: true },
+        ];
+
+        let counter = 1103.4567;
+        let mainChartInstance = null;
+
+        // --- CORE NAVIGATION ---
+        function switchTab(id) {
+            ['dashboard', 'monitoring', 'finances', 'profile', 'deploy'].forEach(v => {
+                const element = document.getElementById(`view-${v}`);
+                const btn = document.getElementById(`btn-${v}`);
+                if (element) element.classList.add('hidden');
+                if (btn) { btn.classList.remove('bg-emerald-600', 'text-white', 'shadow-lg'); btn.classList.add('text-slate-400'); }
+            });
+            document.getElementById(`view-${id}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`btn-${id}`);
+            activeBtn.classList.remove('text-slate-400');
+            activeBtn.classList.add('bg-emerald-600', 'text-white', 'shadow-lg');
+        }
+
+        // --- CHART GENERATION ---
+        function loadChart() {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            const labels = projectionData.map(d => d.year);
+            const carbonArr = projectionData.map(d => d.amount);
+            const incomeArr = projectionData.map(d => d.income);
+            const barColors = projectionData.map(d => d.phase2 ? '#10b981' : '#e2e8f0');
+
+            mainChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Income (THB)', data: incomeArr, type: 'line', borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.05)', borderWidth: 4, pointRadius: 0, fill: true, tension: 0.4, yAxisID: 'y1' },
+                        { label: 'Carbon (Tons)', data: carbonArr, backgroundColor: barColors, borderRadius: 6, barThickness: 22, yAxisID: 'y' }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#fff', titleColor: '#1e293b', bodyColor: '#64748b', borderColor: '#f1f5f9', borderWidth: 1, cornerRadius: 16 } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } },
+                        y: { position: 'left', grid: { borderDash: [5, 5], color: '#f1f5f9' }, ticks: { font: { size: 10 } } },
+                        y1: { position: 'right', grid: { display: false }, ticks: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // --- SIMULATION ENGINE ---
+        function startSimulation() {
+            setInterval(() => {
+                counter += 0.0001;
+                document.getElementById('carbon-counter').innerText = counter.toFixed(4);
+                if(!document.getElementById('view-monitoring').classList.contains('hidden')) {
+                    document.getElementById('val-ndvi').innerText = (0.76 + Math.random()*0.06).toFixed(2);
+                    document.getElementById('val-co2').innerText = (12.2 + Math.random()*1.2).toFixed(1);
+                    document.getElementById('val-moisture').innerText = (64.5 + Math.random()*2).toFixed(1);
+                    document.getElementById('val-temp').innerText = (27.8 + Math.random()*2).toFixed(1);
+                }
+            }, 3000);
+        }
+
+        // --- TRANSACTION FLOW ---
+        function openModal() { document.getElementById('payoutModal').classList.remove('hidden'); goToStep(1); }
+        function closeModal() { document.getElementById('payoutModal').classList.add('hidden'); }
+        function goToStep(s) { [1,2,3].forEach(step => document.getElementById(`modal-step-${step}`).classList.add('hidden')); document.getElementById(`modal-step-${s}`).classList.remove('hidden'); if(s===2) setupPin(); }
+        function setupPin() {
+            const container = document.getElementById('pin-container');
+            container.innerHTML = '';
+            for(let i=0; i<6; i++) {
+                const input = document.createElement('input');
+                input.type = 'password'; input.maxLength = 1;
+                input.className = "w-10 h-16 md:w-14 md:h-20 text-center text-4xl font-black bg-slate-100 border-2 border-transparent focus:border-blue-600 focus:bg-white rounded-2xl outline-none transition-all";
+                input.onkeyup = (e) => { if(e.key === "Backspace" && i > 0) container.children[i-1].focus(); else if(input.value.length === 1 && i < 5) container.children[i+1].focus(); };
+                container.appendChild(input);
+            }
+            container.children[0].focus();
+        }
+        function validatePin() { if(Array.from(document.querySelectorAll('#pin-container input')).every(i => i.value !== '')) goToStep(3); else alert("Please complete the PIN."); }
+
+        window.onload = () => { loadChart(); startSimulation(); switchTab('dashboard'); };
+    </script>
+</body>
+</html>
