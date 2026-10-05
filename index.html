@@ -181,7 +181,7 @@
             <form id="login-form" onsubmit="handleLogin(event)" class="p-6 sm:p-7 space-y-4 text-xs">
                 <div>
                     <label class="block font-semibold text-slate-300 mb-1.5">บทบาทผู้ใช้งาน (User Role)</label>
-                    <select id="login-role" onchange="autoFillLoginByRole(this.value)" class="w-full bg-slate-950/90 border border-slate-700/80 text-slate-100 text-xs font-medium rounded-xl px-3.5 py-3 focus:outline-none focus:border-emerald-500 transition cursor-pointer">
+                    <select id="login-role" class="w-full bg-slate-950/90 border border-slate-700/80 text-slate-100 text-xs font-medium rounded-xl px-3.5 py-3 focus:outline-none focus:border-emerald-500 transition cursor-pointer">
                         <option value="VVB" selected>ผู้ตรวจสอบคาร์บอนเครดิต (VVB Auditor)</option>
                         <option value="ADMIN">Super Admin (ADMIN)</option>
                         <option value="OPERATOR">เจ้าหน้าที่บันทึกข้อมูล (Data Operator)</option>
@@ -191,12 +191,12 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block font-semibold text-slate-300 mb-1.5">อีเมลผู้ใช้งาน (Email Address)</label>
-                    <input type="text" id="login-username" value="vvb@greensolar.co.th" placeholder="admin@greensolar.co.th" class="w-full bg-slate-950/90 border border-slate-700/80 text-slate-100 text-xs rounded-xl px-3.5 py-3 focus:outline-none focus:border-emerald-500 transition placeholder-slate-500 font-mono" required>
+                    <label class="block font-semibold text-slate-300 mb-1.5">ชื่อผู้ใช้งาน/อีเมล (Username/Email)</label>
+                    <input type="text" id="login-username" value="" placeholder="ระบุชื่อผู้ใช้งานหรืออีเมล" class="w-full bg-slate-950/90 border border-slate-700/80 text-slate-100 text-xs rounded-xl px-3.5 py-3 focus:outline-none focus:border-emerald-500 transition placeholder-slate-500 font-mono" required>
                 </div>
                 <div>
                     <label class="block font-semibold text-slate-300 mb-1.5">รหัสผ่าน (Password)</label>
-                    <input type="password" id="login-password" value="••••••••" placeholder="••••••••" class="w-full bg-slate-950/90 border border-slate-700/80 text-slate-100 text-xs rounded-xl px-3.5 py-3 focus:outline-none focus:border-emerald-500 transition placeholder-slate-500 font-mono" required>
+                    <input type="password" id="login-password" value="" placeholder="กรอกรหัสผ่าน" class="w-full bg-slate-950/90 border border-slate-700/80 text-slate-100 text-xs rounded-xl px-3.5 py-3 focus:outline-none focus:border-emerald-500 transition placeholder-slate-500 font-mono" required>
                 </div>
 
                 <button type="submit" class="w-full mt-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-600/30 transition duration-200 flex items-center justify-center space-x-2 text-sm cursor-pointer">
