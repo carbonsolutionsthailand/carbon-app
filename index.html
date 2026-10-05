@@ -1944,22 +1944,7 @@
             return true;
         }
 
-        function autoFillLoginByRole(roleKey) {
-            const roleEmailMap = {
-                ADMIN: { email: "admin@greensolar.co.th", pass: "admin123" },
-                OPERATOR: { email: "operator@greensolar.co.th", pass: "op123" },
-                ENGINEER: { email: "engineer@greensolar.co.th", pass: "eng123" },
-                TECHNICIAN: { email: "technician@greensolar.co.th", pass: "tech123" },
-                VVB: { email: "vvb@greensolar.co.th", pass: "vvb123" },
-                HOUSEHOLD: { email: "household@greensolar.co.th", pass: "house123" }
-            };
-            if (roleEmailMap[roleKey]) {
-                document.getElementById('login-username').value = roleEmailMap[roleKey].email;
-                document.getElementById('login-password').value = roleEmailMap[roleKey].pass;
-            }
-        }
-
-        async function saveHouseholdToFirebase(householdData) {
+         async function saveHouseholdToFirebase(householdData) {
             try {
                 console.log("[Firebase Cloud] Saving household payload asynchronously...", householdData);
                 return { success: true, message: "Synced to Firebase Cloud" };
@@ -1987,7 +1972,6 @@
             currentUser = systemPersonnel[0];
             renderSidebarNav();
             switchTab('admin');
-            autoFillLoginByRole('VVB');
         });
 
         function handleLogin(event) {
